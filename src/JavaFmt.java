@@ -1,19 +1,35 @@
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import java.util.List;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import grammar.*;
-public class Main {
-    public static void main(String[] args) {
+
+@Command(name = "java-fmt", mixinStandardHelpOptions = true)
+public class JavaFmt implements Runnable {
+
+    @Option(names={"-i", "--input-file"}, description="Input file path", required=true)
+    String inputFile;
+
+    @Parameters(arity="1..*", description="Output file path")
+    List<String> outputFiles;
+
+    @Override
+    public void run() {
         CharStream inp = null;
 
         try {
-            inp = CharStreams.fromFileName("src/rewriter/InsertDocListener.java");
+            inp = CharStreams.fromFileName(inputFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -27,11 +43,15 @@ public class Main {
 //        walker.walk(inserter,tree);
 //        System.out.println(inserter.rewriter.getText());
 //        try {
-//            var wr = new FileWriter("wy.java");
+//            var wr = new FileWriter(outputFiles[0]);
 //            wr.write(inserter.rewriter.getText());
 //            wr.close();
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
+    }
+    public static void main(String[] args) {
+        int exitCode = new CommandLine(new JavaFmt()).execute(args);
+        System.exit(exitCode);
     }
 }
