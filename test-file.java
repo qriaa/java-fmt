@@ -1,10 +1,10 @@
 import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
+                import picocli.CommandLine.Command;
+    import picocli.CommandLine.Option;
+    import picocli.CommandLine.Parameters;
 
-import org.antlr.v4.gui.Trees;
-import org.antlr.v4.runtime.CharStream;
+    import org.antlr.v4.gui.Trees;
+	import org.antlr.v4.runtime.CharStream; //this line has a tab
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -20,16 +20,16 @@ import static java.lang.Thread.sleep;
 
 @Command(name = "java-fmt", mixinStandardHelpOptions = true)
 public class JavaFmt implements Runnable {
+                        // this line has unnecessary whitespace
+@Option(names={"-i", "--input-file"}, description="Input file path", required=true)
+String inputFile;
 
-    @Option(names={"-i", "--input-file"}, description="Input file path", required=true)
-    String inputFile;
-
-    @Parameters(arity="1..*", description="Output file path")
+@Parameters(arity="1..*", description="Output file path")
     List<String> outputFiles;
 
     @Override
-    public void run() {
-        CharStream inp = null;
+public void run() {
+    CharStream inp = null;
 
         try {
             inp = CharStreams.fromFileName(inputFile);
@@ -41,8 +41,7 @@ public class JavaFmt implements Runnable {
         JavaParser par = new JavaParser(tokens);
 
         ParseTree tree = par.compilationUnit();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        IndentListener inserter = new IndentListener(tokens);
+        ParseTreeWalker walker = new ParseTreeWalker(); IndentListener inserter = new IndentListener(tokens); // should be broken into two lines
         walker.walk(inserter,tree);
 
 //        Trees.inspect(tree, par);
@@ -53,8 +52,7 @@ public class JavaFmt implements Runnable {
 //        }
 
         System.out.println(inserter.rewriter.getText());
-        try {
-            var wr = new FileWriter(outputFiles.getFirst());
+        try {var wr = new FileWriter(outputFiles.getFirst()); // this should be in a new line
             wr.write(inserter.rewriter.getText());
             wr.close();
         } catch (IOException e) {
@@ -62,7 +60,6 @@ public class JavaFmt implements Runnable {
         }
     }
     public static void main(String[] args) {
-        int exitCode = new CommandLine(new JavaFmt()).execute(args);
-        System.exit(exitCode);
+        int exitCode = new CommandLine(new JavaFmt()).execute(args);System.exit(exitCode);
     }
 }
