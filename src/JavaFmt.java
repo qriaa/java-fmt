@@ -42,7 +42,7 @@ public class JavaFmt implements Runnable {
 
         ParseTree tree = par.compilationUnit();
         ParseTreeWalker walker = new ParseTreeWalker();
-        IndentListener inserter = new IndentListener(tokens);
+        IndentListener inserter = new IndentListener(lex, tokens);
         walker.walk(inserter,tree);
 
 //        Trees.inspect(tree, par);
