@@ -12,6 +12,7 @@ public class IndentListener extends JavaParserBaseListener {
     TokenStreamRewriter rewriter;
 
     private int indentationLevel = 0;
+    public String indentationString = "    ";
 
     public IndentListener(CommonTokenStream tokens) {
         this.tokStream = tokens;
@@ -35,15 +36,18 @@ public class IndentListener extends JavaParserBaseListener {
         System.out.println(ctx.start.getText());
         List<Token> spaces = tokStream.getHiddenTokensToLeft(ctx.start.getTokenIndex());
         if(spaces == null) {
+            rewriter.insertBefore(ctx.start, "\n");
             System.out.println("\"\"");
         } else {
-            System.out.print("\"");
-            for (Token whitespace : spaces) {
-                System.out.print("ws:" + whitespace.getText());
-            }
-            System.out.println("\"");
+            System.out.println("\"" + spaces.getLast().getText() + "\"");
+//            System.out.print("\"");
+//            for (Token whitespace : spaces) {
+//                System.out.print(whitespace.getTokenIndex());
+//                System.out.print("ws:" + whitespace.getText());
+//            }
+//            System.out.println("\"");
         }
-//        Token lastBefore = spaces.getLast();
+        //Token lastBefore = spaces.getLast();
         // try parsing up until first newline, if it doesn't work then recognize the token with the lexer
         // (move \n out of WS in the lexer into its own thing)
     }
