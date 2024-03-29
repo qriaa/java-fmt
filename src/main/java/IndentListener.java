@@ -1,8 +1,9 @@
-import grammar.JavaLexer;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.TokenStreamRewriter;
 
+import grammar.JavaLexer;
 import grammar.JavaParser;
 import grammar.JavaParserBaseListener;
 
@@ -14,12 +15,20 @@ public class IndentListener extends JavaParserBaseListener {
     TokenStreamRewriter rewriter;
 
     private int indentationLevel = 0;
-    public String indentationString = "    ";
+    private final String indentationString;
 
-    public IndentListener(JavaLexer lexer, CommonTokenStream tokens) {
+    public IndentListener(JavaLexer lexer, JsonNode config, CommonTokenStream tokens) {
         this.tokStream = tokens;
         this.lexer = lexer;
         rewriter = new TokenStreamRewriter(tokens);
+
+        String indentType = config.get("type").asText();
+        if(indentType.equals("spaces")) {
+            int indentWidth = config.get("width").asInt();
+            this.indentationString = " ".repeat(indentWidth);
+        } else {
+            this.indentationString = "\t";
+        }
     }
 
     private String getTokenType(Token token) {
@@ -49,17 +58,10 @@ public class IndentListener extends JavaParserBaseListener {
         rewriter.insertBefore(startToken, indentationString.repeat(indentationLevel));
         if(prependNewline)
             rewriter.insertBefore(startToken, "\n");
-
-//        System.out.print("\"");
-//        for (Token whitespace : spaces) {
-//            System.out.print(lexer.getVocabulary().getDisplayName(whitespace.getType()) + ":" + whitespace.getText());
-//        }
-//        System.out.println("\"");
     }
 
     @Override
     public void enterBlock(JavaParser.BlockContext ctx) {
-        System.out.println("block +1");
         indentationLevel++;
     }
 
@@ -90,6 +92,7 @@ public class IndentListener extends JavaParserBaseListener {
 
     @Override
     public void enterBlockStatement(JavaParser.BlockStatementContext ctx) {
+        // use XPath for some blockless ifs, for loops, etc.
         indentLine(ctx.start);
     }
 
