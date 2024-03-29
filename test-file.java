@@ -30,10 +30,12 @@ String inputFile;
 public void run() {
     CharStream inp = null;
 
-        try {
-            inp = CharStreams.fromFileName(inputFile);
+    if(true)
+    System.out.println("true");
+
+        try {inp = CharStreams.fromFileName(inputFile);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+        throw new RuntimeException(e);
         }
         JavaLexer lex = new JavaLexer(inp);
         CommonTokenStream tokens = new CommonTokenStream(lex);

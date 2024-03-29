@@ -1,6 +1,9 @@
 ### Antlr ###
 gen/
 
+### Maven ###
+target/
+
 ### IntelliJ IDEA ###
 .idea/
 out/
