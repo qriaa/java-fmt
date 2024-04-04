@@ -33,8 +33,15 @@ public void run() {
     if(true)
     System.out.println("true");
 
+    while(false)
+System.out.println("while false");
+
+    if(false) {
+System.out.println("hmm");
+    }
+
         try {inp = CharStreams.fromFileName(inputFile);
-        } catch (IOException e) {
+    } catch (IOException e) {
         throw new RuntimeException(e);
         }
         JavaLexer lex = new JavaLexer(inp);

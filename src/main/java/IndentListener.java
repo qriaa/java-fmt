@@ -12,14 +12,16 @@ import java.util.List;
 public class IndentListener extends JavaParserBaseListener {
     private final CommonTokenStream tokStream;
     private final JavaLexer lexer;
+    private final JavaParser parser;
     TokenStreamRewriter rewriter;
 
     private int indentationLevel = 0;
     private final String indentationString;
 
-    public IndentListener(JavaLexer lexer, JsonNode config, CommonTokenStream tokens) {
+    public IndentListener(JavaLexer lexer, JavaParser parser, JsonNode config, CommonTokenStream tokens) {
         this.tokStream = tokens;
         this.lexer = lexer;
+        this.parser = parser;
         rewriter = new TokenStreamRewriter(tokens);
 
         String indentType = config.get("type").asText();
@@ -68,6 +70,7 @@ public class IndentListener extends JavaParserBaseListener {
     @Override
     public void exitBlock(JavaParser.BlockContext ctx) {
         indentationLevel--;
+        indentLine(ctx.stop);
     }
 
     @Override
@@ -79,20 +82,37 @@ public class IndentListener extends JavaParserBaseListener {
     public void exitClassBody(JavaParser.ClassBodyContext ctx) {
         indentationLevel--;
     }
-//
-//    @Override
-//    public void enterInterfaceBody(JavaParser.InterfaceBodyContext ctx) {
-//        indentationLevel++;
-//    }
-//
-//    @Override
-//    public void exitInterfaceBody(JavaParser.InterfaceBodyContext ctx) {
-//        indentationLevel--;
-//    }
 
     @Override
-    public void enterBlockStatement(JavaParser.BlockStatementContext ctx) {
-        // use XPath for some blockless ifs, for loops, etc.
+    public void enterInterfaceBody(JavaParser.InterfaceBodyContext ctx) {
+        indentationLevel++;
+    }
+
+    @Override
+    public void exitInterfaceBody(JavaParser.InterfaceBodyContext ctx) {
+        indentationLevel--;
+    }
+
+    @Override
+    public void enterStatement(JavaParser.StatementContext ctx) {
+        if(ctx.blockLabel != null)
+            return;
+
+        boolean isBlocklessStatement = ctx.parent.getRuleIndex() == JavaParser.RULE_statement;
+        if(isBlocklessStatement)
+            indentationLevel++;
+        indentLine(ctx.start);
+        if(isBlocklessStatement)
+            indentationLevel--;
+    }
+
+    @Override
+    public void enterLocalVariableDeclaration(JavaParser.LocalVariableDeclarationContext ctx) {
+        indentLine(ctx.start);
+    }
+
+    @Override
+    public void enterLocalTypeDeclaration(JavaParser.LocalTypeDeclarationContext ctx) {
         indentLine(ctx.start);
     }
 
@@ -138,9 +158,4 @@ public class IndentListener extends JavaParserBaseListener {
     public void enterInterfaceBodyDeclaration(JavaParser.InterfaceBodyDeclarationContext ctx) {
         indentLine(ctx.start);
     }
-
-//    @Override
-//    public void enterAnnotation(JavaParser.AnnotationContext ctx) {
-//        indentLine(ctx.start);
-//    }
 }

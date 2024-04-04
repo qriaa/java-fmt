@@ -63,7 +63,7 @@ public class JavaFmt implements Runnable {
 
         ParseTree tree = par.compilationUnit();
         ParseTreeWalker walker = new ParseTreeWalker();
-        IndentListener inserter = new IndentListener(lex, config.get("indentation"), tokens);
+        IndentListener inserter = new IndentListener(lex, par, config.get("indentation"), tokens);
         walker.walk(inserter,tree);
 
 //        Trees.inspect(tree, par);
