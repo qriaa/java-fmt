@@ -20,7 +20,6 @@ import static java.lang.Thread.sleep;
 
 @Command(name = "java-fmt", mixinStandardHelpOptions = true)
 public class JavaFmt implements Runnable {
-                        // this line has unnecessary whitespace
 @Option(names={"-i", "--input-file"}, description="Input file path", required=true)
 String inputFile;
 
@@ -31,18 +30,26 @@ String inputFile;
 public void run() {
     CharStream inp = null;
 
-        try {
-            inp = CharStreams.fromFileName(inputFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    if(true)
+    System.out.println("true");
+
+    while(false)
+System.out.println("while false");
+
+    if(false) {
+System.out.println("hmm");
+    }
+
+        try {inp = CharStreams.fromFileName(inputFile);
+    } catch (IOException e) {
+        throw new RuntimeException(e);
         }
         JavaLexer lex = new JavaLexer(inp);
         CommonTokenStream tokens = new CommonTokenStream(lex);
         JavaParser par = new JavaParser(tokens);
 
-        ParseTree tree = par.compilationUnit();
-        ParseTreeWalker walker = new ParseTreeWalker(); IndentListener inserter = new IndentListener(tokens); // should be broken into two lines
-        walker.walk(inserter,tree);
+        ParseTree tree = par.compilationUnit(); /*weird inline comment*/ ParseTreeWalker walker = new ParseTreeWalker();
+        IndentListener inserter = new IndentListener(tokens); walker.walk(inserter,tree);// should be broken into two lines
 
 //        Trees.inspect(tree, par);
 //        try {
